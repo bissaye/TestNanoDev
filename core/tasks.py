@@ -1,9 +1,11 @@
 from html.parser import HTMLParser
 from urllib.request import urlopen
-from lxml import html
 
 
-class LinkFinder(HTMLParser):
+from .models import News
+
+
+class NewsFinder(HTMLParser):
     def __init__(self):
         super().__init__()
         self.infos_link = False
@@ -40,3 +42,15 @@ class LinkFinder(HTMLParser):
         self.feed(html_string)
         return self.Data
 
+
+def Crawl():
+    news = NewsFinder()
+    datas = news.crawl()
+    for data in datas:
+        try:
+            News.objects.get(title=data)
+            print(data)
+        except:
+            new = News.objects.create(title=data)
+            new.save()
+            print(f"nouveau {data}")
